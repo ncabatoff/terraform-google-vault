@@ -27,18 +27,18 @@ apt-get install -yqq jq libcap2-bin logrotate unzip
 curl -sSfL https://dl.google.com/cloudagents/install-logging-agent.sh | bash
 curl -sSfL https://dl.google.com/cloudagents/install-monitoring-agent.sh | bash
 
-# Download and install Vault
-cd /tmp && \
-  curl -sLfO "https://releases.hashicorp.com/vault/${vault_version}/vault_${vault_version}_linux_amd64.zip" && \
-  unzip "vault_${vault_version}_linux_amd64.zip" && \
-  mv vault /usr/local/bin/vault && \
-  rm "vault_${vault_version}_linux_amd64.zip"
+gsutil cp gs://ncabatoff-vault-binaries/vault.gz /usr/local/bin/vault.gz
+gunzip -f /usr/local/bin/vault.gz
+chmod 755 /usr/local/bin/vault
 
 # Give Vault the ability to run mlock as non-root
 /sbin/setcap cap_ipc_lock=+ep /usr/local/bin/vault
 
 # Add Vault user
 useradd -d /etc/vault.d -s /bin/false vault
+
+mkdir -p /opt/vault/data
+chown vault:vault /opt/vault/data
 
 # Vault config
 mkdir -p /etc/vault.d

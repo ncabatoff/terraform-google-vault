@@ -232,6 +232,13 @@ variable "vault_tls_bucket" {
   description = "GCS Bucket override where Vault will expect TLS certificates are stored."
 }
 
+variable "vault_bin_bucket" {
+  type    = string
+  default = ""
+
+  description = "GCS Bucket override where Vault binary is stored."
+}
+
 variable "vault_tls_kms_key" {
   type    = string
   default = ""

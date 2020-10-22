@@ -21,9 +21,13 @@ seal "gcpckms" {
 }
 
 # Enable HA backend storage with GCS
-storage "gcs" {
-  bucket     = "${storage_bucket}"
-  ha_enabled = "true"
+storage "raft" {
+  path    = "/opt/vault/data"
+  retry_join {
+    auto_join = "provider=gce tag_value=ncabatoff-vault"
+    auto_join_scheme = "http"
+    auto_join_port = 8200
+  }
 }
 
 # Create local non-TLS listener
@@ -35,25 +39,15 @@ listener "tcp" {
 # Create an mTLS listener on the load balancer
 listener "tcp" {
   address            = "${lb_ip}:${vault_port}"
-  tls_cert_file      = "/etc/vault.d/tls/vault.crt"
-  tls_key_file       = "/etc/vault.d/tls/vault.key"
-  tls_client_ca_file = "/etc/vault.d/tls/ca.crt"
-
-  tls_disable_client_certs           = "${vault_tls_disable_client_certs}"
-  tls_require_and_verify_client_cert = "${vault_tls_require_and_verify_client_cert}"
+  tls_disable = 1
 }
 
 # Create an mTLS listener locally. Client's shouldn't talk to Vault directly,
 # but not all clients are well-behaved. This is also needed so the nodes can
-# communicate with eachother.
+# communicate with each other.
 listener "tcp" {
   address            = "LOCAL_IP:${vault_port}"
-  tls_cert_file      = "/etc/vault.d/tls/vault.crt"
-  tls_key_file       = "/etc/vault.d/tls/vault.key"
-  tls_client_ca_file = "/etc/vault.d/tls/ca.crt"
-
-  tls_disable_client_certs           = "${vault_tls_disable_client_certs}"
-  tls_require_and_verify_client_cert = "${vault_tls_require_and_verify_client_cert}"
+  tls_disable = 1
 }
 
 # Send data to statsd (Stackdriver monitoring)

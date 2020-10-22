@@ -496,3 +496,10 @@ variable "user_startup_script" {
 
   description = "Additional user-provided code injected after Vault is setup"
 }
+
+variable "vault_bin_bucket" {
+  type    = string
+  default = ""
+
+  description = "gcs bucket where vault.gz is found"
+}

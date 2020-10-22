@@ -64,3 +64,9 @@ resource "google_storage_bucket_iam_member" "tls-bucket-iam" {
   role   = "roles/storage.objectViewer"
   member = local.service_account_member
 }
+
+resource "google_storage_bucket_iam_member" "bin-bucket-iam" {
+  bucket = var.vault_bin_bucket
+  role   = "roles/storage.objectViewer"
+  member = local.service_account_member
+}
